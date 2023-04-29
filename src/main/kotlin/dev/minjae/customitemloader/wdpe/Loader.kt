@@ -1,28 +1,29 @@
 package dev.minjae.customitemloader.wdpe
 
-import com.nukkitx.protocol.bedrock.packet.ItemComponentPacket
-import com.nukkitx.protocol.bedrock.v419.serializer.ItemComponentSerializer_v419
 import dev.minjae.customitemloader.wdpe.handler.DownstreamPacketHandler
 import dev.waterdog.waterdogpe.event.defaults.InitialServerConnectedEvent
-import dev.waterdog.waterdogpe.event.defaults.ProtocolCodecRegisterEvent
-import dev.waterdog.waterdogpe.network.session.bedrock.BedrockDefaultClient
+import dev.waterdog.waterdogpe.network.protocol.ProtocolCodecs
+import dev.waterdog.waterdogpe.network.protocol.ProtocolVersion
+import dev.waterdog.waterdogpe.network.protocol.updaters.ProtocolCodecUpdater
 import dev.waterdog.waterdogpe.plugin.Plugin
+import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec
+import org.cloudburstmc.protocol.bedrock.codec.v419.serializer.ItemComponentSerializer_v419
+import org.cloudburstmc.protocol.bedrock.packet.ItemComponentPacket
 
 class Loader : Plugin() {
 
     override fun onEnable() {
         proxy.eventManager.subscribe(InitialServerConnectedEvent::class.java) { event ->
             val player = event.player
-            player.pluginDownstreamHandler =
-                DownstreamPacketHandler((player.downstream as BedrockDefaultClient).session.session)
+            player.pluginPacketHandlers.add(DownstreamPacketHandler())
         }
+        ProtocolCodecs.addUpdater(object : ProtocolCodecUpdater {
+            override fun updateCodec(builder: BedrockCodec.Builder, codec: BedrockCodec): BedrockCodec.Builder =
+                builder.apply {
+                    registerPacket({ ItemComponentPacket() }, ItemComponentSerializer_v419.INSTANCE, 162)
+                }
 
-        proxy.eventManager.subscribe(ProtocolCodecRegisterEvent::class.java) { event ->
-            event.codecBuilder.registerPacket(
-                ItemComponentPacket::class.java,
-                ItemComponentSerializer_v419.INSTANCE,
-                162
-            )
-        }
+            override fun getRequiredVersion(): Int = ProtocolVersion.latest().protocol // always support latest version
+        })
     }
 }

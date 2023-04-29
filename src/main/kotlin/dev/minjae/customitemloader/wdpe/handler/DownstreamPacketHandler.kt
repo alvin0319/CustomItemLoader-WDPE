@@ -1,19 +1,23 @@
 package dev.minjae.customitemloader.wdpe.handler
 
-import com.nukkitx.protocol.bedrock.BedrockSession
-import com.nukkitx.protocol.bedrock.packet.ItemComponentPacket
-import dev.waterdog.waterdogpe.utils.exceptions.CancelSignalException
-import dev.waterdog.waterdogpe.utils.types.PacketHandler
+import dev.waterdog.waterdogpe.network.PacketDirection
+import dev.waterdog.waterdogpe.network.protocol.handler.PluginPacketHandler
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket
+import org.cloudburstmc.protocol.bedrock.packet.ItemComponentPacket
+import org.cloudburstmc.protocol.common.PacketSignal
 
-class DownstreamPacketHandler(session: BedrockSession) : PacketHandler(session) {
+class DownstreamPacketHandler : PluginPacketHandler {
 
     private var itemComponentPacketSent = false
 
-    override fun handle(packet: ItemComponentPacket): Boolean {
-        if (itemComponentPacketSent) {
-            throw CancelSignalException.CANCEL
+    override fun handlePacket(p0: BedrockPacket, p1: PacketDirection): PacketSignal {
+        if (p0 is ItemComponentPacket && p1 == PacketDirection.FROM_SERVER) {
+            if (itemComponentPacketSent) {
+                return PacketSignal.UNHANDLED
+            }
+            itemComponentPacketSent = true
+            return PacketSignal.HANDLED
         }
-        itemComponentPacketSent = true
-        return true
+        return PacketSignal.UNHANDLED
     }
 }

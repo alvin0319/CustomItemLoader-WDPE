@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.6.20"
+    kotlin("jvm") version "1.8.20"
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
@@ -19,7 +19,7 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
-    compileOnly("dev.waterdog.waterdogpe:waterdog:1.1.7")
+    compileOnly("dev.waterdog.waterdogpe:waterdog:2.0.0-SNAPSHOT")
 }
 
 tasks.test {
