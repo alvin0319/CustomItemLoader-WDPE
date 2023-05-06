@@ -15,6 +15,14 @@ repositories {
         name = "waterdog-repo"
         url = uri("https://repo.waterdog.dev/artifactory/main")
     }
+    maven {
+        name = "opencollab-releases"
+        url = uri("https://repo.opencollab.dev/maven-releases/")
+    }
+    maven {
+        name = "opencollab-snapshots"
+        url = uri("https://repo.opencollab.dev/maven-snapshots/")
+    }
 }
 
 dependencies {
