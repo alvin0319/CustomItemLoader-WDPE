@@ -20,6 +20,7 @@ class Loader : Plugin() {
         ProtocolCodecs.addUpdater(object : ProtocolCodecUpdater {
             override fun updateCodec(builder: BedrockCodec.Builder, codec: BedrockCodec): BedrockCodec.Builder =
                 builder.apply {
+                    deregisterPacket(ItemComponentPacket::class.java)
                     registerPacket({ ItemComponentPacket() }, ItemComponentSerializer_v419.INSTANCE, 162)
                 }
 
